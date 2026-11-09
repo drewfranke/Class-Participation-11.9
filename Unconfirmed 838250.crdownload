@@ -1,0 +1,145 @@
+# ============================================================
+# Temperature Converter Streamlit App (Improved Version)
+# ============================================================
+# This app converts temperatures between Celsius and Fahrenheit
+# with validation, error handling, and edge case detection
+# ============================================================
+
+# Import Streamlit library for building the web app
+import streamlit as st
+
+
+# ============================================================
+# Page Configuration
+# ============================================================
+
+# Set the title and icon that appear in the browser tab
+st.set_page_config(
+    page_title="Temperature Converter",
+    page_icon="🌡️",
+    layout="centered"
+)
+
+
+# ============================================================
+# App Title and Description
+# ============================================================
+
+# Display the main title
+st.title("🌡️ Temperature Converter")
+
+# Display a subtitle explaining what the app does
+st.write("Convert temperatures between Celsius and Fahrenheit instantly!")
+
+# Add a divider line for visual organization
+st.divider()
+
+
+# ============================================================
+# User Input Section
+# ============================================================
+
+# Create two columns for a cleaner layout
+col1, col2 = st.columns(2)
+
+# In the first column, let the user enter a temperature value
+with col1:
+    temperature = st.number_input(
+        label="Enter temperature value:",
+        value=0.0,  # Default value is 0
+        step=0.1    # User can increase/decrease by 0.1
+    )
+
+# In the second column, let the user choose the conversion type
+with col2:
+    conversion_type = st.selectbox(
+        label="Convert from:",
+        options=["Celsius to Fahrenheit", "Fahrenheit to Celsius"]
+    )
+
+
+# ============================================================
+# Conversion Logic with Validation
+# ============================================================
+
+# Check for physically impossible temperatures
+if temperature < -273.15:
+    st.error("❌ Error: Temperature cannot be below -273.15°C (absolute zero)!")
+    st.stop()
+
+if temperature > 1000:
+    st.warning("⚠️ Warning: That's an extremely high temperature. Proceed with caution.")
+
+# Determine which conversion to perform based on user selection
+if conversion_type == "Celsius to Fahrenheit":
+    # Formula: (Celsius × 9/5) + 32 = Fahrenheit
+    converted_temp = round((temperature * 9/5) + 32, 2)
+    original_unit = "°C"
+    converted_unit = "°F"
+    formula = "(°C × 9/5) + 32 = °F"
+
+else:  # Fahrenheit to Celsius
+    # Formula: (Fahrenheit - 32) × 5/9 = Celsius
+    converted_temp = round((temperature - 32) * 5/9, 2)
+    original_unit = "°F"
+    converted_unit = "°C"
+    formula = "(°F - 32) × 5/9 = °C"
+
+
+# ============================================================
+# Display Results with Enhanced Feedback
+# ============================================================
+
+st.divider()
+
+# Format the display value (remove unnecessary decimals)
+if converted_temp == int(converted_temp):
+    display_value = f"{int(converted_temp)} {converted_unit}"
+else:
+    display_value = f"{converted_temp:.2f} {converted_unit}"
+
+# Display the conversion result in a large, highlighted box
+st.metric(
+    label="Converted Temperature",
+    value=display_value,
+    delta=f"From {temperature} {original_unit}"
+)
+
+# Add some space
+st.write("")
+
+# Display the formula used for this conversion
+st.info(f"**Formula used:** {formula}")
+
+# Special message for -40 (where Celsius and Fahrenheit are equal)
+if abs(converted_temp - temperature) < 0.01:
+    st.success("🔥 Fun fact: -40°C and -40°F are the same temperature!")
+
+# Show the calculation step-by-step
+st.write("**Calculation:**")
+st.code(f"{temperature} {original_unit} = {converted_temp:.2f} {converted_unit}", language="text")
+
+
+# ============================================================
+# Additional Information Section
+# ============================================================
+
+st.divider()
+
+# Create an expandable section with reference information
+with st.expander("📚 Reference Information"):
+    st.write("""
+    **Key Temperature Points:**
+    
+    | Temperature | Celsius | Fahrenheit |
+    |---|---|---|
+    | Absolute Zero | -273.15°C | -459.67°F |
+    | Water Freezes | 0°C | 32°F |
+    | Room Temperature | 20°C | 68°F |
+    | Body Temperature | 37°C | 98.6°F |
+    | Water Boils | 100°C | 212°F |
+    """)
+
+# Add a footer with helpful tips
+st.write("")
+st.caption("💡 Tip: You can type a number directly or use the +/- buttons to adjust the temperature.")
